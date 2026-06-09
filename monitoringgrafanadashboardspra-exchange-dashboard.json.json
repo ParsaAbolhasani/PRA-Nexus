@@ -1,0 +1,143 @@
+{
+  "dashboard": {
+    "title": "PRA Exchange - Complete Monitoring",
+    "description": "Full monitoring dashboard for PRA Exchange platform",
+    "tags": ["pra-exchange", "blockchain", "defi"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "title": "System Health",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 4, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "up{job=\"pra-backend\"}",
+            "legendFormat": "API Status"
+          }
+        ]
+      },
+      {
+        "title": "Total Trades (24h)",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 4, "x": 4, "y": 0},
+        "targets": [
+          {
+            "expr": "sum(increase(pra_trades_total[24h]))",
+            "legendFormat": "Trades"
+          }
+        ]
+      },
+      {
+        "title": "Total Volume (PRA)",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 4, "x": 8, "y": 0},
+        "targets": [
+          {
+            "expr": "sum(increase(pra_volume_pra_total[24h]))",
+            "legendFormat": "Volume"
+          }
+        ]
+      },
+      {
+        "title": "Active Peers",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 4, "x": 12, "y": 0},
+        "targets": [
+          {
+            "expr": "pra_p2p_peers",
+            "legendFormat": "Peers"
+          }
+        ]
+      },
+      {
+        "title": "CPU Usage",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 4},
+        "targets": [
+          {
+            "expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+            "legendFormat": "CPU Usage %"
+          }
+        ]
+      },
+      {
+        "title": "Memory Usage",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 4},
+        "targets": [
+          {
+            "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
+            "legendFormat": "Memory Usage %"
+          }
+        ]
+      },
+      {
+        "title": "Transaction Rate",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 12},
+        "targets": [
+          {
+            "expr": "rate(pra_transaction_duration_seconds_count[5m])",
+            "legendFormat": "TPS"
+          }
+        ]
+      },
+      {
+        "title": "API Response Time",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 12},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(pra_api_duration_seconds_bucket[5m])) by (le, endpoint))",
+            "legendFormat": "{{endpoint}}"
+          }
+        ]
+      },
+      {
+        "title": "Mempool Size",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 20},
+        "targets": [
+          {
+            "expr": "pra_mempool_size",
+            "legendFormat": "Pending Txs"
+          }
+        ]
+      },
+      {
+        "title": "Trade Success Rate",
+        "type": "gauge",
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 20},
+        "targets": [
+          {
+            "expr": "(sum(pra_trades_success_total) / sum(pra_trades_total)) * 100",
+            "legendFormat": "Success %"
+          }
+        ]
+      },
+      {
+        "title": "PostgreSQL Connections",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 28},
+        "targets": [
+          {
+            "expr": "pg_stat_database_numbackends",
+            "legendFormat": "DB Connections"
+          }
+        ]
+      },
+      {
+        "title": "Blockchain Latest Block",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 4, "x": 16, "y": 0},
+        "targets": [
+          {
+            "expr": "pra_latest_block",
+            "legendFormat": "Block"
+          }
+        ]
+      }
+    ]
+  },
+  "overwrite": true
+}

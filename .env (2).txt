@@ -1,0 +1,20 @@
+# Blockchain
+RPC_WS_URL=wss://sepolia.infura.io/ws/v3/YOUR_PROJECT_ID
+RPC_HTTP_URL=https://sepolia.infura.io/v3/YOUR_PROJECT_ID
+PRA_TOKEN_ADDRESS=0x...
+PRA_ESCROW_ADDRESS=0x...
+PRIVATE_KEY=your_private_key_here
+
+# Database
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=your_password
+DB_NAME=pra_exchange
+
+# Telegram Bot
+TELEGRAM_BOT_TOKEN=your_bot_token
+TELEGRAM_CHAT_ID=your_chat_id
+
+# API
+API_PORT=8080

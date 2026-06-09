@@ -1,0 +1,32 @@
+version: '3.8'
+
+include:
+  - docker-compose.yml
+  - docker-compose.monitoring.yml
+  - docker-compose.logging.yml
+
+services:
+  # اضافه کردن Grafana با دیتاسورس Loki
+  grafana:
+    image: grafana/grafana:latest
+    container_name: pra_grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-lokiexplore-app
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    ports:
+      - "3000:3000"
+    networks:
+      - pra_network
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+      - loki
+
+volumes:
+  grafana_data:
+    external: true

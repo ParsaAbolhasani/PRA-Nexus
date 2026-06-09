@@ -1,0 +1,110 @@
+{
+  "dashboard": {
+    "title": "Security & Threat Monitoring",
+    "description": "Security dashboard for PRA Exchange - Monitor threats, anomalies, and attacks",
+    "tags": ["security", "threats", "pra-exchange"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "title": "Failed API Requests (4xx/5xx)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total{status=~\"4..|5..\"}[5m])) by (status)",
+            "legendFormat": "{{status}}"
+          }
+        ]
+      },
+      {
+        "title": "Suspicious IP Addresses",
+        "type": "table",
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 0},
+        "targets": [
+          {
+            "expr": "topk(10, sum(rate(http_requests_total[1h])) by (client_ip))",
+            "legendFormat": "IP: {{client_ip}}"
+          }
+        ]
+      },
+      {
+        "title": "Unusual Transaction Patterns",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 0},
+        "targets": [
+          {
+            "expr": "rate(pra_transaction_amount_anomalies[5m])",
+            "legendFormat": "Anomalies"
+          }
+        ]
+      },
+      {
+        "title": "Smart Contract Revert Rate",
+        "type": "gauge",
+        "gridPos": {"h": 6, "w": 6, "x": 0, "y": 8},
+        "targets": [
+          {
+            "expr": "(sum(rate(pra_contract_reverts_total[5m])) / sum(rate(pra_contract_calls_total[5m]))) * 100",
+            "legendFormat": "Revert %"
+          }
+        ]
+      },
+      {
+        "title": "Rate Limiting Hits",
+        "type": "graph",
+        "gridPos": {"h": 6, "w": 6, "x": 6, "y": 8},
+        "targets": [
+          {
+            "expr": "rate(pra_rate_limit_hits_total[5m])",
+            "legendFormat": "Rate Limited"
+          }
+        ]
+      },
+      {
+        "title": "Potential DDoS Activity",
+        "type": "heatmap",
+        "gridPos": {"h": 6, "w": 6, "x": 12, "y": 8},
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total[1m])) by (client_ip)",
+            "legendFormat": "Requests per IP"
+          }
+        ]
+      },
+      {
+        "title": "Blockchain Double-Spend Attempts",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 4, "x": 0, "y": 14},
+        "targets": [
+          {
+            "expr": "increase(pra_double_spend_attempts_total[24h])",
+            "legendFormat": "Attempts (24h)"
+          }
+        ]
+      },
+      {
+        "title": "Invalid Signatures",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 4, "x": 4, "y": 14},
+        "targets": [
+          {
+            "expr": "increase(pra_invalid_signature_total[24h])",
+            "legendFormat": "Invalid"
+          }
+        ]
+      },
+      {
+        "title": "SQL Injection Attempts",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 4, "x": 8, "y": 14},
+        "targets": [
+          {
+            "expr": "increase(pra_sql_injection_attempts_total[24h])",
+            "legendFormat": "Attempts"
+          }
+        ]
+      }
+    ]
+  },
+  "overwrite": true
+}

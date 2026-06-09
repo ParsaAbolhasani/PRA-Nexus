@@ -1,0 +1,21 @@
+cluster.name: pra-cluster
+node.name: pra-es-node
+path.data: /usr/share/elasticsearch/data
+path.logs: /usr/share/elasticsearch/logs
+
+network.host: 0.0.0.0
+http.port: 9200
+transport.port: 9300
+
+discovery.type: single-node
+
+xpack.security.enabled: true
+xpack.security.http.ssl.enabled: false
+xpack.monitoring.collection.enabled: true
+
+# بهینه‌سازی برای مصرف حافظه
+indices.fielddata.cache.size: 20%
+indices.breaker.fielddata.limit: 40%
+
+# ایندکس‌ها
+action.auto_create_index: .monitoring*,.watches,.triggered_watches,.watcher-history*,pra-*

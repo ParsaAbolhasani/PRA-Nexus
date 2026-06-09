@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: pra_postgres
+    environment:
+      POSTGRES_USER: pra_user
+      POSTGRES_PASSWORD: pra_password
+      POSTGRES_DB: pra_exchange
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - pra_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pra_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PRA Exchange Backend (Go App)
+  pra-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pra_backend
+    environment:
+      # Blockchain
+      RPC_WS_URL: ${RPC_WS_URL}
+      RPC_HTTP_URL: ${RPC_HTTP_URL}
+      PRA_TOKEN_ADDRESS: ${PRA_TOKEN_ADDRESS}
+      PRA_ESCROW_ADDRESS: ${PRA_ESCROW_ADDRESS}
+      PRIVATE_KEY: ${PRIVATE_KEY}
+      # Database
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: pra_user
+      DB_PASSWORD: pra_password
+      DB_NAME: pra_exchange
+      # Telegram
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+      # API
+      API_PORT: 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - pra_network
+    restart: unless-stopped
+
+  # Optional: PgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pra_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@pra-exchange.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - pra_network
+    restart: unless-stopped
+
+  # Optional: Redis for caching (future use)
+  redis:
+    image: redis:7-alpine
+    container_name: pra_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - pra_network
+    restart: unless-stopped
+
+networks:
+  pra_network:
+    driver: bridge
+
+volumes:
+  postgres_data:

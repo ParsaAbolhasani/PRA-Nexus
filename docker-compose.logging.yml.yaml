@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # ==================== Loki (جمع‌آوری و ذخیره لاگ‌ها) ====================
+  loki:
+    image: grafana/loki:latest
+    container_name: pra_loki
+    volumes:
+      - ./monitoring/loki/loki-config.yml:/etc/loki/loki-config.yml
+      - loki_data:/loki
+    command: -config.file=/etc/loki/loki-config.yml
+    ports:
+      - "3100:3100"
+    networks:
+      - pra_network
+    restart: unless-stopped
+
+  # ==================== Promtail (ارسال لاگ‌ها به Loki) ====================
+  promtail:
+    image: grafana/promtail:latest
+    container_name: pra_promtail
+    volumes:
+      - ./monitoring/promtail/promtail-config.yml:/etc/promtail/promtail-config.yml
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: -config.file=/etc/promtail/promtail-config.yml
+    networks:
+      - pra_network
+    restart: unless-stopped
+    depends_on:
+      - loki
+
+volumes:
+  loki_data:
+
+networks:
+  pra_network:
+    external: true

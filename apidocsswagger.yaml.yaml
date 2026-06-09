@@ -1,0 +1,218 @@
+openapi: 3.0.0
+info:
+  title: PRA Exchange API
+  description: |
+    REST API for PRA Token Exchange Platform
+    - Real-time trade management
+    - Transfer history
+    - Statistics and monitoring
+  version: 1.0.0
+  contact:
+    name: Parsa Abolhasani Rad
+    email: parsaabolhasani9@gmail.com
+
+servers:
+  - url: http://localhost:8080
+    description: Development Server
+  - url: https://api.pra-exchange.com
+    description: Production Server
+
+tags:
+  - name: Health
+    description: Service health check
+  - name: Trades
+    description: Trade management
+  - name: Transfers
+    description: Token transfer history
+  - name: Statistics
+    description: Platform statistics
+
+components:
+  schemas:
+    Trade:
+      type: object
+      properties:
+        ID:
+          type: integer
+          example: 1
+        TradeID:
+          type: integer
+          example: 1001
+        Buyer:
+          type: string
+          example: "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2"
+        Seller:
+          type: string
+          example: "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4"
+        PRAAmount:
+          type: number
+          example: 100.5
+        IRRAmount:
+          type: number
+          example: 5000000
+        Status:
+          type: string
+          enum: [pending, paid, completed, cancelled]
+          example: "completed"
+        TxHash:
+          type: string
+          example: "0xabc123..."
+        CreatedAt:
+          type: string
+          format: date-time
+        PaidAt:
+          type: string
+          format: date-time
+        CompletedAt:
+          type: string
+          format: date-time
+
+    TransferEvent:
+      type: object
+      properties:
+        ID:
+          type: integer
+          example: 1
+        From:
+          type: string
+          example: "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4"
+        To:
+          type: string
+          example: "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2"
+        Amount:
+          type: number
+          example: 25.0
+        TxHash:
+          type: string
+          example: "0xdef456..."
+        BlockNum:
+          type: integer
+          example: 12345678
+        CreatedAt:
+          type: string
+          format: date-time
+
+    Stats:
+      type: object
+      properties:
+        total_trades:
+          type: integer
+          example: 150
+        completed_trades:
+          type: integer
+          example: 120
+        total_volume_pra:
+          type: number
+          example: 5000.75
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Trade not found"
+
+  parameters:
+    tradeIdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Trade ID
+    addressParam:
+      name: address
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Ethereum address (0x...)
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: Returns service status
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+
+  /api/trades:
+    get:
+      tags:
+        - Trades
+      summary: Get all trades
+      description: Returns list of all trades (latest first)
+      responses:
+        '200':
+          description: List of trades
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trade'
+
+  /api/trades/{id}:
+    get:
+      tags:
+        - Trades
+      summary: Get trade by ID
+      description: Returns a single trade by its internal ID
+      parameters:
+        - $ref: '#/components/parameters/tradeIdParam'
+      responses:
+        '200':
+          description: Trade found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trade'
+        '404':
+          description: Trade not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/transfers/{address}:
+    get:
+      tags:
+        - Transfers
+      summary: Get transfers by address
+      description: Returns all PRA token transfers for a specific address (both sent and received)
+      parameters:
+        - $ref: '#/components/parameters/addressParam'
+      responses:
+        '200':
+          description: List of transfers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransferEvent'
+
+  /api/stats:
+    get:
+      tags:
+        - Statistics
+      summary: Get platform statistics
+      description: Returns aggregated statistics about trades and volume
+      responses:
+        '200':
+          description: Statistics data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stats'

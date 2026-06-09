@@ -1,0 +1,121 @@
+{
+  "dashboard": {
+    "title": "Blockchain & P2P Network",
+    "description": "Blockchain node monitoring for PRA Exchange - P2P, Mempool, Consensus",
+    "tags": ["blockchain", "p2p", "pra-exchange"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "title": "Latest Block Height",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 4, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "pra_latest_block",
+            "legendFormat": "Block #"
+          }
+        ]
+      },
+      {
+        "title": "Block Time (Seconds)",
+        "type": "gauge",
+        "gridPos": {"h": 4, "w": 4, "x": 4, "y": 0},
+        "targets": [
+          {
+            "expr": "pra_block_time_seconds",
+            "legendFormat": "Block Time"
+          }
+        ]
+      },
+      {
+        "title": "Mempool Size",
+        "type": "graph",
+        "gridPos": {"h": 6, "w": 8, "x": 8, "y": 0},
+        "targets": [
+          {
+            "expr": "pra_mempool_size",
+            "legendFormat": "Pending Transactions"
+          }
+        ]
+      },
+      {
+        "title": "P2P Peer Count",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 4, "x": 16, "y": 0},
+        "targets": [
+          {
+            "expr": "pra_p2p_peers",
+            "legendFormat": "Peers"
+          }
+        ]
+      },
+      {
+        "title": "Transaction Throughput (TPS)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 4},
+        "targets": [
+          {
+            "expr": "rate(pra_transactions_processed_total[1m])",
+            "legendFormat": "TPS"
+          }
+        ]
+      },
+      {
+        "title": "Gas Price (Gwei)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 4},
+        "targets": [
+          {
+            "expr": "pra_gas_price_gwei",
+            "legendFormat": "Gas Price"
+          }
+        ]
+      },
+      {
+        "title": "Consensus Health",
+        "type": "graph",
+        "gridPos": {"h": 6, "w": 8, "x": 0, "y": 12},
+        "targets": [
+          {
+            "expr": "pra_consensus_rounds_total",
+            "legendFormat": "Rounds"
+          }
+        ]
+      },
+      {
+        "title": "Block Propagation Delay",
+        "type": "heatmap",
+        "gridPos": {"h": 6, "w": 8, "x": 8, "y": 12},
+        "targets": [
+          {
+            "expr": "pra_block_propagation_delay_seconds",
+            "legendFormat": "Delay"
+          }
+        ]
+      },
+      {
+        "title": "Chain Reorganizations",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 4, "x": 16, "y": 4},
+        "targets": [
+          {
+            "expr": "increase(pra_chain_reorgs_total[24h])",
+            "legendFormat": "Reorgs"
+          }
+        ]
+      },
+      {
+        "title": "Orphan Blocks",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 4, "x": 16, "y": 8},
+        "targets": [
+          {
+            "expr": "increase(pra_orphan_blocks_total[24h])",
+            "legendFormat": "Orphans"
+          }
+        ]
+      }
+    ]
+  },
+  "overwrite": true
+}

@@ -1,0 +1,28 @@
+filebeat.inputs:
+  - type: container
+    enabled: true
+    paths:
+      - /var/lib/docker/containers/*/*.log
+    json.keys_under_root: true
+    json.add_error_key: true
+    json.message_key: log
+    processors:
+      - add_docker_metadata: ~
+
+  - type: filestream
+    id: pra-backend-logs
+    enabled: true
+    paths:
+      - /var/log/pra-backend/*.log
+    prospector.scanner.symlinks: true
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+output.logstash:
+  hosts: ["logstash:5044"]
+
+logging.level: info
+logging.to_files: false
+logging.to_stderr: true
